@@ -21,9 +21,9 @@ import type { CellId } from "./types";
 import GripVertical from "lucide-solid/icons/grip-vertical";
 import Plus from "lucide-solid/icons/plus";
 import Trash2 from "lucide-solid/icons/trash-2";
-// added icons for moving cell up and down
 import ArrowUp from "lucide-solid/icons/arrow-up";
 import ArrowDown from "lucide-solid/icons/arrow-down";
+import Copy from "lucide-solid/icons/copy";
 
 import "./notebook_cell.css";
 
@@ -54,15 +54,15 @@ export type CellActions = {
     // The cell has received focus.
     hasFocused: () => void;
 
-    // Move Cell Up
+    // Move Cell Up | issue 150
     moveCellUp: () => void;
 
-    // Move Cell Down
+    // Move Cell Down | issue 150
     moveCellDown: () => void;
 
-    // addressing issue 151 
-    duplicate: () => void; // this will allow for duplicate action
-  
+    // Duplicate Cell \ issue 150
+    duplicateCell: () => void;
+
 };
 
 const cellDragDataKey = Symbol("notebook-cell");
@@ -117,6 +117,12 @@ export function NotebookCell(props: {
             onComplete: props.actions.deleteForward,
         },
         {
+            name: "Duplicate",
+            icon: <Copy size={16} />,
+            onComplete: props.actions.duplicateCell,
+        },
+
+        {
             name: "Move Up",
             icon: <ArrowUp size={16} />,
             onComplete: props.actions.moveCellUp, // Call the moveCellUp action
@@ -156,11 +162,14 @@ export function NotebookCell(props: {
     return (
         <div class="cell" onMouseEnter={showGutter} onMouseLeave={hideGutter} ref={rootRef}>
             <div class="cell-gutter">
+
                 <IconButton
+                    aria-label="Plus"
                     onClick={props.actions.createBelow}
                     style={{ visibility: visibility(isGutterVisible()) }}
                 >
                     <Plus />
+<<<<<<< Updated upstream
                 </IconButton>
                 <Popover
                     open={isMenuOpen()}
@@ -186,6 +195,61 @@ export function NotebookCell(props: {
                         </Popover.Content>
                     </Popover.Portal>
                 </Popover>
+=======
+                </IconButton>
+
+                <IconButton
+                        aria-label="Duplicate Cell"
+                        onClick={props.actions.duplicateCell}  
+                        style={{ visibility: visibility(isGutterVisible()) }}
+                    >
+                        <Copy />
+                    </IconButton>
+
+                <IconButton
+                    aria-label="Move Up"
+                    onClick={props.actions.moveCellUp} 
+                    style={{ visibility: visibility(isGutterVisible()) }}
+                >
+                    <ArrowUp />
+                </IconButton>
+
+
+
+                    <IconButton
+                        aria-label="Move Down"
+                        onClick={props.actions.moveCellDown}
+                        style={{ visibility: visibility(isGutterVisible()) }}
+                    >
+                        <ArrowDown />
+                    </IconButton>
+
+
+                    <Popover
+                        open={isMenuOpen()}
+                        onOpenChange={setMenuOpen}
+                        floatingOptions={{
+                            autoPlacement: {
+                                allowedPlacements: ["left"],
+                            },
+                        }}
+                    >
+                        <Popover.Anchor as="span">
+                            <IconButton
+                                onClick={openMenu}
+                                style={{ visibility: visibility(isGutterVisible() || isMenuOpen()) }}
+                                ref={handleRef}
+                            >
+                                <GripVertical />
+                            </IconButton>
+                        </Popover.Anchor>
+                        <Popover.Portal>
+                            <Popover.Content class="popup">
+                                <Completions completions={completions()} onComplete={closeMenu} />
+                            </Popover.Content>
+                        </Popover.Portal>
+                    </Popover>
+>>>>>>> Stashed changes
             </div>
             <div class="cell-content">{props.children}</div>
             <Show when={props.tag}>
@@ -261,6 +325,7 @@ export function StemCellEditor(props: {
             exitDown={props.actions.activateBelow}
             onFocus={props.actions.hasFocused}
             placeholder="Select cell type"
+    
         />
     );
 }

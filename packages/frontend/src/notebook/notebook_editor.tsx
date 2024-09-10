@@ -28,6 +28,7 @@ import {
 import { type Cell, type FormalCell, type Notebook, newRichTextCell, newStemCell } from "./types";
 
 import "./notebook_editor.css";
+import { uuidv7 } from "uuidv7";
 
 /** Constructor of a cell in a notebook.
 
@@ -46,6 +47,7 @@ export type CellConstructor<T> = {
 
     // Function to construct the cell.
     construct: () => Cell<T>;
+
 };
 
 /** Notebook editor based on Automerge.
@@ -82,6 +84,9 @@ export function NotebookEditor<T>(props: {
             setActiveCell(activeCell() + 1);
         });
     };
+
+
+
 
     // Adds a new cell or replaces the active cell based on its type
     const addOrReplaceActiveCell = (cell: Cell<T>) => {
@@ -210,12 +215,6 @@ export function NotebookEditor<T>(props: {
                             activateAbove: () => {
                                 i() > 0 && setActiveCell(i() - 1);
                             },
-                            duplicate: () => {
-                                props.changeNotebook((nb) => {
-                                    nb.cells.splice(i() + 1, 0, deepCopyJSON(nb.cells[i()])); // Insert a deep copy of the cell below
-                                    setActiveCell(i() + 1); // Set the active cell to the new position
-                                });
-                            },
                             // activates the cell below the current one
                             activateBelow: () => {
                                 const n = props.notebook.cells.length;
@@ -249,28 +248,37 @@ export function NotebookEditor<T>(props: {
                             hasFocused: () => {
                                 setActiveCell(i());
                             },
+                         
+                            // duplicate cell
+                        duplicateCell: () => {
+                                props.changeNotebook((nb) => {
+                                    const currentCell = nb.cells[i()];
+                                    const newCell = deepCopyJSON(currentCell);
+                                    newCell.id = uuidv7(); // Generate a new UUID for the duplicated cell
+                                    nb.cells.splice(i() + 1, 0, newCell);
+                                    setActiveCell(i() + 1); // Activate the duplicated cell
+                                });
+                            },
                             // moving cell up 
                             moveCellUp: () => {
-                                if (props.notebook.cells.length > 0 && i() > 0) {
-                                    props.changeNotebook((nb) => {
-                                        const cellToMoveUp = nb.cells[i()]; // declaring the cell to be moved
-                                        nb.cells.splice(i(), 1); // Remove the original cell
-                                        nb.cells.splice(i() - 1, 0, cellToMoveUp); // Insert the cell above
-                                    });
-                                    setActiveCell(i() - 1); // Set the active cell to the new position
-                                }
+                                props.changeNotebook((nb) => {   
+                                    if (i() > 0) {
+                                        const [cellToMoveUp] = nb.cells.splice(i(), 1);
+                                        nb.cells.splice(i() - 1, 0, cellToMoveUp);
+                                        setActiveCell(i() - 1);
+                                    }
+                                });
                             },
                             // moving cell down 
                             moveCellDown: () => {
-                                if (props.notebook.cells.length > 0 && i() < props.notebook.cells.length - 1) {
-                                    props.changeNotebook((nb) => {
-                                        const cellToMoveDown = nb.cells[i()]; // Declare the cell to be moved
-                                        nb.cells.splice(i(), 1); // Remove the original cell
-                                        nb.cells.splice(i() + 1, 0, cellToMoveDown); // Insert the cell below its original position
-                                    });
-                                    setActiveCell(i() + 1); // Set the active cell to the new position
-                                }
-                            },
+                                props.changeNotebook((nb) => {
+                                    if (i() < nb.cells.length - 1) {
+                                        const [cellToMoveDown] = nb.cells.splice(i(), 1);
+                                        nb.cells.splice(i() + 1, 0, cellToMoveDown);
+                                        setActiveCell(i() + 1);
+                                    }
+                                });
+                            },                  
                             //// hamidah's additions (end)
                         };
 
