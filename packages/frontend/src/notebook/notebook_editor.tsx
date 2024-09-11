@@ -50,8 +50,6 @@ export type CellConstructor<T> = {
 
     //vduplication
     duplicate?: (cell: Cell<T>) => Cell<T>;
-
-
 };
 
 /** Notebook editor based on Automerge.
@@ -268,21 +266,22 @@ export function NotebookEditor<T>(props: {
                                 props.changeNotebook((nb) => {   
                                     if (i() > 0) {
                                         const [cellToMoveUp] = nb.cells.splice(i(), 1);
-                                        nb.cells.splice(i() - 1, 0, cellToMoveUp);
+                                        nb.cells.splice(i() - 1, 0, deepCopyJSON(cellToMoveUp)); // Use deepCopyJSON to avoid reference issues
                                         setActiveCell(i() - 1);
                                     }
                                 });
                             },
-                            // moving cell down 
+                            
+                            // Move Cell Down | issue 150
                             moveCellDown: () => {
                                 props.changeNotebook((nb) => {
                                     if (i() < nb.cells.length - 1) {
                                         const [cellToMoveDown] = nb.cells.splice(i(), 1);
-                                        nb.cells.splice(i() + 1, 0, cellToMoveDown);
+                                        nb.cells.splice(i() + 1, 0, deepCopyJSON(cellToMoveDown)); // Use deepCopyJSON to avoid reference issues
                                         setActiveCell(i() + 1);
                                     }
                                 });
-                            },                  
+                            },    
                             //// hamidah's additions (end)
                         };
 

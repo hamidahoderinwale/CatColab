@@ -169,7 +169,6 @@ export function NotebookCell(props: {
                     style={{ visibility: visibility(isGutterVisible()) }}
                 >
                     <Plus />
-<<<<<<< Updated upstream
                 </IconButton>
                 <Popover
                     open={isMenuOpen()}
@@ -195,61 +194,6 @@ export function NotebookCell(props: {
                         </Popover.Content>
                     </Popover.Portal>
                 </Popover>
-=======
-                </IconButton>
-
-                <IconButton
-                        aria-label="Duplicate Cell"
-                        onClick={props.actions.duplicateCell}  
-                        style={{ visibility: visibility(isGutterVisible()) }}
-                    >
-                        <Copy />
-                    </IconButton>
-
-                <IconButton
-                    aria-label="Move Up"
-                    onClick={props.actions.moveCellUp} 
-                    style={{ visibility: visibility(isGutterVisible()) }}
-                >
-                    <ArrowUp />
-                </IconButton>
-
-
-
-                    <IconButton
-                        aria-label="Move Down"
-                        onClick={props.actions.moveCellDown}
-                        style={{ visibility: visibility(isGutterVisible()) }}
-                    >
-                        <ArrowDown />
-                    </IconButton>
-
-
-                    <Popover
-                        open={isMenuOpen()}
-                        onOpenChange={setMenuOpen}
-                        floatingOptions={{
-                            autoPlacement: {
-                                allowedPlacements: ["left"],
-                            },
-                        }}
-                    >
-                        <Popover.Anchor as="span">
-                            <IconButton
-                                onClick={openMenu}
-                                style={{ visibility: visibility(isGutterVisible() || isMenuOpen()) }}
-                                ref={handleRef}
-                            >
-                                <GripVertical />
-                            </IconButton>
-                        </Popover.Anchor>
-                        <Popover.Portal>
-                            <Popover.Content class="popup">
-                                <Completions completions={completions()} onComplete={closeMenu} />
-                            </Popover.Content>
-                        </Popover.Portal>
-                    </Popover>
->>>>>>> Stashed changes
             </div>
             <div class="cell-content">{props.children}</div>
             <Show when={props.tag}>
