@@ -48,8 +48,8 @@ export type CellConstructor<T> = {
     // Function to construct the cell.
     construct: () => Cell<T>;
 
-    //vduplication
-    duplicate?: (cell: Cell<T>) => Cell<T>;
+    //duplication -- CellConstructor extension
+    duplicateCell?: (cell: Cell<T>) => Cell<T>; 
 };
 
 /** Notebook editor based on Automerge.
@@ -254,11 +254,16 @@ export function NotebookEditor<T>(props: {
                             // duplicate cell
                         duplicateCell: () => {
                                 props.changeNotebook((nb) => {
+                                    if (i() >= 0) {
                                     const currentCell = nb.cells[i()];
-                                    const newCell = deepCopyJSON(currentCell);
+                                    console.log(nb.cells[i()]);
+                                   const newCell = deepCopyJSON(currentCell);
                                     newCell.id = uuidv7(); // Generate a new UUID for the duplicated cell
                                     nb.cells.splice(i() + 1, 0, newCell);
                                     setActiveCell(i() + 1); // Activate the duplicated cell
+                                    // console.log for checking new IDs (confirmed)
+                                    console.log("Duplicating and New Cell ID:", currentCell.id, newCell.id);
+                                    }
                                 });
                             },
                             // moving cell up 
@@ -266,7 +271,7 @@ export function NotebookEditor<T>(props: {
                                 props.changeNotebook((nb) => {   
                                     if (i() > 0) {
                                         const [cellToMoveUp] = nb.cells.splice(i(), 1);
-                                        nb.cells.splice(i() - 1, 0, deepCopyJSON(cellToMoveUp)); // Use deepCopyJSON to avoid reference issues
+                                        nb.cells.splice(i() - 1, 0, deepCopyJSON(cellToMoveUp)); 
                                         setActiveCell(i() - 1);
                                     }
                                 });
@@ -277,7 +282,7 @@ export function NotebookEditor<T>(props: {
                                 props.changeNotebook((nb) => {
                                     if (i() < nb.cells.length - 1) {
                                         const [cellToMoveDown] = nb.cells.splice(i(), 1);
-                                        nb.cells.splice(i() + 1, 0, deepCopyJSON(cellToMoveDown)); // Use deepCopyJSON to avoid reference issues
+                                        nb.cells.splice(i() + 1, 0, deepCopyJSON(cellToMoveDown)); 
                                         setActiveCell(i() + 1);
                                     }
                                 });
